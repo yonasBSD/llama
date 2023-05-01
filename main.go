@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io/fs"
 	"math"
@@ -765,12 +766,33 @@ func (m *model) preview() {
 		}
 	}
 
+  buf, err := runPreviewCmd(filePath)
+  if err != nil {
+    m.previewContent = err.Error()
+    return
+  }
+
 	switch {
-	case utf8.Valid(content):
-		m.previewContent = leaveOnlyAscii(content)
-	default:
-		m.previewContent = warning.Render("No preview available")
-	}
+    case utf8.Valid(buf.Bytes()):
+      m.previewContent = Replace(string(buf.String()), "\t", "    ", -1)
+    default:
+      m.previewContent = warning.Render("No preview available")
+  }
+}
+
+func runPreviewCmd(filePath string) (*bytes.Buffer, error) {
+  var buf bytes.Buffer
+  cmd := exec.Command("bat", "-pP", "--color=always", filePath)
+  cmd.Stdout = &buf
+
+  err := cmd.Start()
+  if err != nil {
+    return nil, err
+  }
+
+  defer cmd.Wait()
+
+  return &buf, nil
 }
 
 func leaveOnlyAscii(content []byte) string {
