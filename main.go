@@ -19,11 +19,12 @@ import (
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/mattn/go-runewidth"
 	"github.com/muesli/termenv"
 	"github.com/sahilm/fuzzy"
 )
 
-var Version = "v1.6.2"
+var Version = "v1.7.0"
 
 const separator = "    " // Separator between columns.
 
@@ -36,6 +37,7 @@ var (
 	danger        = lipgloss.NewStyle().Background(lipgloss.Color("#FF0000")).Foreground(lipgloss.Color("#FFFFFF"))
 	fileSeparator = string(filepath.Separator)
 	showIcons     = false
+	strlen        = runewidth.StringWidth
 )
 
 var (
@@ -74,6 +76,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	startPreviewMode := false
 
 	for i := 1; i < len(os.Args); i++ {
 		if os.Args[i] == "--help" || os.Args[1] == "-h" {
@@ -85,6 +88,10 @@ func main() {
 		if os.Args[i] == "--icons" {
 			showIcons = true
 			parseIcons()
+			continue
+		}
+		if os.Args[i] == "--preview" {
+			startPreviewMode = true
 			continue
 		}
 		startPath, err = filepath.Abs(os.Args[1])
@@ -101,6 +108,7 @@ func main() {
 		width:     80,
 		height:    60,
 		positions: make(map[string]position),
+		previewMode: startPreviewMode,
 	}
 	m.list()
 
@@ -178,7 +186,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, nil
 			} else if key.Matches(msg, keyBack) {
 				if len(m.search) > 0 {
-					m.search = m.search[:len(m.search)-1]
+					m.search = m.search[:strlen(m.search)-1]
 					return m, nil
 				}
 			} else if msg.Type == tea.KeyRunes {
@@ -423,7 +431,7 @@ func (m *model) View() string {
 	m.preview()
 
 	// Get output rows width before coloring.
-	outputWidth := len(path.Base(m.path)) // Use current dir name as default.
+	outputWidth := strlen(path.Base(m.path)) // Use current dir name as default.
 	if m.previewMode {
 		row := make([]string, m.columns)
 		for i := 0; i < m.columns; i++ {
@@ -433,7 +441,7 @@ func (m *model) View() string {
 				outputWidth = width
 			}
 		}
-		outputWidth = max(outputWidth, len(Join(row, separator)))
+		outputWidth = max(outputWidth, strlen(Join(row, separator)))
 	} else {
 		outputWidth = width
 	}
@@ -480,9 +488,9 @@ func (m *model) View() string {
 		location = TrimSuffix(location, fileSeparator)
 		filter = fileSeparator + m.search
 	}
-	barLen := len(location) + len(filter)
+	barLen := strlen(location) + strlen(filter)
 	if barLen > outputWidth {
-		location = location[min(barLen-outputWidth, len(location)):]
+		location = location[min(barLen-outputWidth, strlen(location)):]
 	}
 	barStr := bar.Render(location) + search.Render(filter)
 
@@ -852,14 +860,14 @@ start:
 				}
 				n++
 			}
-			if max < len(name) {
-				max = len(name)
+			if max < strlen(name) {
+				max = strlen(name)
 			}
 			names[i][j] = name
 		}
 		// Append spaces to make all names in one column of same size.
 		for j := 0; j < rows; j++ {
-			names[i][j] += Repeat(" ", max-len(names[i][j]))
+			names[i][j] += Repeat(" ", max-strlen(names[i][j]))
 		}
 	}
 	for j := 0; j < rows; j++ {
@@ -867,7 +875,7 @@ start:
 		for i := 0; i < columns; i++ {
 			row[i] = names[i][j]
 		}
-		if len(Join(row, separator)) > width && columns > 1 {
+		if strlen(Join(row, separator)) > width && columns > 1 {
 			// Yep. No luck, let's decrease number of columns and try one more time.
 			columns--
 			goto start
@@ -924,6 +932,7 @@ func usage() {
 	put("    y\tYank current directory path to clipboard")
 	put("\n  Flags:\n")
 	put("    --icons\tdisplay icons")
+	put("    --preview\tdisplay preview")
 	_ = w.Flush()
 	_, _ = fmt.Fprintf(os.Stderr, "\n")
 	os.Exit(1)

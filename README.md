@@ -21,15 +21,7 @@ brew install walk
 ```
 
 ```
-snap install walk
-```
-
-```
 pkg_add walk
-```
-
-```
-pacman -S walk
 ```
 
 ```
@@ -121,9 +113,13 @@ Install [Nerd Fonts](https://www.nerdfonts.com) and add `--icons` flag.
 
 ### Image preview
 
-No additional setup required.
+No additional setup is required.
 
 <img src=".github/images/images-mode.gif" width="600" alt="Walk Image Preview">
+
+## Become a sponsor
+
+Every line of code in my repositories 📖 signifies my unwavering commitment to open source 💡. Your support 🤝 ensures these projects keep thriving, innovating, and benefiting all 💼. If my work has ever resonated 🎵 or helped you, kindly consider showing love ❤️ by sponsoring. [**🚀 Sponsor Me Today! 🚀**](https://github.com/sponsors/antonmedv)
 
 ## License
 
