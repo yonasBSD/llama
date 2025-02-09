@@ -6,13 +6,9 @@
   <br>
 </p>
 
-**Walk** — a terminal navigator.
+**Walk** — a terminal navigator; a `cd` and `ls` replacement.
 
-Why another terminal navigator? I wanted something simple and minimalistic.
-Something to help me with faster navigation in the filesystem; a `cd` and `ls`
-replacement. So I build **walk**. It allows for quick navigation with fuzzy
-searching, `cd` integration is quite simple. And you can open `vim` right from
-the walk. That's it.
+Run `lk`, navigate using arrows or hjkl. Press, `esc` to jump to a new location; or `ctrl+c` to stay.
 
 ## Install
 
@@ -29,6 +25,8 @@ go install github.com/antonmedv/walk@latest
 ```
 
 Or download [prebuild binaries](https://github.com/antonmedv/walk/releases).
+
+### Setup
 
 Put the next function into the **.bashrc** or a similar config:
 
@@ -71,6 +69,8 @@ function lk() {
 
 
 Now use `lk` command to start walking.
+
+## Features
 
 ### Preview mode
 
@@ -129,14 +129,25 @@ command to remove files than the default `rm`.
 export WALK_REMOVE_CMD=trash
 ```
 
+Change main color with `WALK_MAIN_COLOR` environment variable. Available colors
+are [here](https://github.com/charmbracelet/lipgloss#colors).
+
+```bash
+export WALK_MAIN_COLOR="#0000FF"
+```
+
+### Flags
+
 Flags can be used to change the default behavior of the program.
 
-| Flag         | Description                |
-|--------------|----------------------------|
-| `--icons`    | Show icons                 |
-| `--dir-only` | Show dirs only             |
-| `--preview`  | Start with preview mode on |
-| `--fuzzy`    | Start with fuzzy search on |
+| Flag            | Description                 |
+|-----------------|-----------------------------|
+| `--icons`       | Show icons                  |
+| `--dir-only`    | Show dirs only              |
+| `--hide-hidden` | Hide hidden files           |
+| `--preview`     | Start with preview mode on  |
+| `--with-border` | Show border in preview mode |
+| `--fuzzy`       | Start with fuzzy search on  |
 
 ## License
 
