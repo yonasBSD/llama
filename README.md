@@ -121,6 +121,12 @@ the walk.
 export EDITOR=vim
 ```
 
+To specify a command to be used to open files per extension, use the `WALK_OPEN_WITH` environment variable.
+
+```bash
+export WALK_OPEN_WITH="txt:less -N;go:vim;md:glow -p"
+```
+
 The `WALK_REMOVE_CMD` environment variable can be used to specify a command to
 be used to remove files. This is useful if you want to use a different
 command to remove files than the default `rm`.
@@ -134,6 +140,12 @@ are [here](https://github.com/charmbracelet/lipgloss#colors).
 
 ```bash
 export WALK_MAIN_COLOR="#0000FF"
+```
+
+Use `WALK_STATUS_BAR` environment variable to specify a [status bar](STATUS_BAR.md) program.
+
+```bash
+export WALK_STATUS_BAR="Size() + ' ' + Mode()"
 ```
 
 ### Flags
